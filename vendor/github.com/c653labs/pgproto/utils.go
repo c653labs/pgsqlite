@@ -36,9 +36,19 @@ func HashPassword(user []byte, password []byte, salt []byte) []byte {
 	return append([]byte("md5"), dst...)
 }
 
-// WriteTo helper function is used to write the binary representation of a Message to an io.Writer
-func WriteTo(m Message, w io.Writer) (int64, error) {
+// WriteMessage helper function is used to write the binary representation of a single Message to an io.Writer
+func WriteMessage(m Message, w io.Writer) (int64, error) {
 	n, err := w.Write(m.Encode())
+	return int64(n), err
+}
+
+// WriteMessages helper function is used to write the binary representation of multiple Messages to an io.Writer
+func WriteMessages(msgs []Message, w io.Writer) (int64, error) {
+	buf := make([]byte, 0)
+	for _, m := range msgs {
+		buf = append(buf, m.Encode()...)
+	}
+	n, err := w.Write(buf)
 	return int64(n), err
 }
 
